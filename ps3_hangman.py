@@ -148,25 +148,33 @@ def hangman(secretWord):
     '''
     print("Welcome to the game Hangman!")
     print("I am thinking of a word that is " + str(len(secretWord)) + " letters long.")
+    print("-----------")
+
     lettersGuessed = []
     numGuesses = 8
-    mistakesMade = 0
-    print("-----------")
+
     while numGuesses > 0:
         availableLetters = getAvailableLetters(lettersGuessed)
         print("You have " + str(numGuesses) + " guesses left.")
         print("Available letters: " + str(availableLetters))
+
         userInput = raw_input("Please guess a letter: ").lower()
         lettersGuessed.append(userInput)
-        temp = getGuessedWord(secretWord, lettersGuessed)
-        if userInput in temp:
-            print("Good guess: " + str(temp))
-        elif (userInput not in availableLetters):
-            print("Oops! You've already guessed that letter: " + str(temp))
+        isInTheWord = getGuessedWord(secretWord, lettersGuessed)
+
+        if (userInput not in availableLetters):
+            print("Oops! You've already guessed that letter: " + str(isInTheWord))
         else:
-            print("Oops! That letter is not in my word: " + str(temp))
-            numGuesses -= 1
-    print("-----------")
+            if userInput in isInTheWord:
+                print("Good guess: " + str(isInTheWord))
+                if isWordGuessed(secretWord, lettersGuessed):
+                    print("Congratulations, you won!")
+                    break
+            else:
+                print("Oops! That letter is not in my word: " + str(isInTheWord))
+                numGuesses -= 1
+        print("-----------")
+
     if isWordGuessed(secretWord, lettersGuessed):
         print("Congratulations, you won!")
     else:
@@ -174,15 +182,9 @@ def hangman(secretWord):
         print("The word was: " + secretWord)
 
 
-
-
-
-
-
-
 # When you've completed your hangman function, uncomment these two lines
 # and run this file to test! (hint: you might want to pick your own
 # secretWord while you're testing)
-
 secretWord = chooseWord(wordlist).lower()
 hangman(secretWord)
+# -----------------------------------
