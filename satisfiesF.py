@@ -7,6 +7,23 @@ def satisfiesF(L):
             should be in the same order.
     Returns the length of L after mutation
     """
-    # Your function implementation here
+    newList = []
+    for item in L:
+        if f(item) == True:
+            newList.append(item)
+    L[:] = newList
+    return len(L)
 
-run_satisfiesF(L, satisfiesF)
+#run_satisfiesF(L, satisfiesF)
+
+def f(s):
+    return 'a' in s
+
+
+
+L = ['a', 'b', 'a']
+print satisfiesF(L)
+#print L
+
+# 2
+# ['a', 'a']
