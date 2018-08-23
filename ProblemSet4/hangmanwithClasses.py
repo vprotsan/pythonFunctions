@@ -1,4 +1,4 @@
-import random 
+import random
 
 class Hand(object):
     def __init__(self, n):
@@ -24,15 +24,15 @@ class Hand(object):
 
         # Build the hand
         numVowels = self.HAND_SIZE // 3
-    
+
         for i in range(numVowels):
             x = self.VOWELS[random.randrange(0,len(self.VOWELS))]
             self.hand[x] = self.hand.get(x, 0) + 1
-        
-        for i in range(numVowels, self.HAND_SIZE):    
+
+        for i in range(numVowels, self.HAND_SIZE):
             x = self.CONSONANTS[random.randrange(0,len(self.CONSONANTS))]
             self.hand[x] = self.hand.get(x, 0) + 1
-            
+
     def setDummyHand(self, handString):
         '''
         Allows you to set a dummy hand. Useful for testing your implementation.
@@ -57,16 +57,14 @@ class Hand(object):
         for k in self.hand:
             ans += self.hand[k]
         return ans
-    
+
     def __str__(self):
         '''
         Display a string representation of the hand.
         '''
         output = ''
-        hand_keys = sorted(self.hand.keys())
-        for letter in hand_keys:
-            for j in range(self.hand[letter]):
-                output += letter
+        for letter in sorted(self.hand.keys()):
+            output += letter * self.hand[letter]
         return output
 
     def update(self, word):
@@ -78,14 +76,27 @@ class Hand(object):
 
         Returns True if the word was able to be made with the letter in
         the hand; False otherwise.
-        
+
         word: string
         returns: Boolean (if the word was or was not made)
         """
         # Your code here
-        raise NotImplementedError()
+        count = 0
+        updatedhand = self.hand.copy()
+        for l in list(word):
+            if l in updatedhand:
+                count += 1
+                if updatedhand[l] == 0:
+                    updatedhand[l] -= 1
+                else:
+                    updatedhand[l] -= 1
+        if count == len(word):
+            self.hand = updatedhand
+            return True
+        else:
+            return False
 
-    
+
 myHand = Hand(7)
 print(myHand)
 print(myHand.calculateLen())
