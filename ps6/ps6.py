@@ -1,4 +1,5 @@
 import string
+import re
 
 ### DO NOT MODIFY THIS FUNCTION ###
 def load_words(file_name):
@@ -109,12 +110,12 @@ class Message(object):
             for start in list(range(26)):
                 totNum = start + shift
                 if totNum < 26:
-                    print(totNum)
+                    # print(totNum)
                     self.shift_dict[lowerAlph[start]] = lowerAlph[totNum]
                     self.shift_dict[upperAlph[start]] = upperAlph[totNum]
                 else:
                     newShiftNum = totNum % 26
-                    print("new shift num " + str(newShiftNum))
+                    # print("new shift num " + str(newShiftNum))
                     self.shift_dict[lowerAlph[start]] = lowerAlph[newShiftNum]
                     self.shift_dict[upperAlph[start]] = upperAlph[newShiftNum]
         return self.shift_dict
@@ -139,6 +140,7 @@ class Message(object):
                newString += i
             else:
                newString += self.shift_dict[i]
+        self.newString = newString
         return self.newString
 
 
@@ -245,46 +247,34 @@ class CiphertextMessage(Message):
         and the decrypted message text using that shift value
         '''
         # check every shiftsshift from 0 to 26
-        # apply first shift to a wordscheck if word is valid
-        currMsgArr = self.message_text.split(" ")
-        # currMsgArr = ['Like', 'ice', 'cream', 'vanilla']
-        possKeys = ()
+        currMsgArr = re.findall(r"[\w']+|[.,!?;]", self.message_text)
         for i in list(range(26)):
-            #  i = 2
+            decryptedString = []
             currDict = self.build_shift_dict(i)
             for word in currMsgArr:
-                # word = 'cream'
                 possibleWord = ''
                 for letter in word:
-                    possibleWord += currDict(letter)
-                if possibleWord in self.valid_words:
-                    possKeys.push(i)
-        return possKeys
-
-
-
-
-
-
-#Example test case (PlaintextMessage)
-# plaintext = PlaintextMessage('hello', 2)
-# print('Expected Output: jgnnq')
-# print('Actual Output:', plaintext.get_message_text_encrypted())
-#
-# #Example test case (CiphertextMessage)
-# ciphertext = CiphertextMessage('jgnnq')
-# print('Expected Output:', (24, 'hello'))
-# print('Actual Output:', ciphertext.decrypt_message())
-
-
-
-
+                    if letter in currDict:
+                        possibleWord += currDict[letter]
+                    else:
+                        possibleWord += letter
+                decryptedString.append(possibleWord)
+            wordCount = 0;punct = 0
+            for eachWord in decryptedString:
+                if eachWord == "," or eachWord == "?" or eachWord == "!":
+                    punct += 1
+                if eachWord in self.valid_words:
+                    wordCount += 1
+                if wordCount + punct == len(currMsgArr):
+                    decryptedStringOutput = " ".join(decryptedString)
+                    return decryptedStringOutput
+# {'a': 'd', 'A': 'D', 'b': 'e', 'B': 'E', 'c': 'f', 'C': 'F', 'd': 'g', 'D': 'G', 'e': 'h', 'E': 'H', 'f': 'i', 'F': 'I', 'g': 'j', 'G': 'J', 'h': 'k', 'H': 'K', 'i': 'l', 'I': 'L', 'j': 'm', 'J': 'M', 'k': 'n', 'K': 'N', 'l': 'o', 'L': 'O', 'm': 'p', 'M': 'P', 'n': 'q', 'N': 'Q', 'o': 'r', 'O': 'R', 'p': 's', 'P': 'S', 'q': 't', 'Q': 'T', 'r': 'u', 'R': 'U', 's': 'v', 'S': 'V', 't': 'w', 'T': 'W', 'u': 'x', 'U': 'X', 'v': 'y', 'V': 'Y', 'w': 'z', 'W': 'Z', 'x': 'a', 'X': 'A', 'y': 'b', 'Y': 'B', 'z': 'c', 'Z': 'C'}
 
 plaintext = PlaintextMessage('hello, mother sunshine', 2)
-print('Expected Output: jgnnq')
+print('Expected Output: jgnnq, oqvjgt uwpujkpg')
 print('Actual Output:', plaintext.get_message_text_encrypted())
 
-
+print('_______________________________________________________')
 ciphertext = CiphertextMessage('jgnnq, oqvjgt uwpujkpg')
-print('Expected Output:', (24, 'hello'))
+print('Expected Output:', (24, 'hello, mother sunshine'))
 print('Actual Output:', ciphertext.decrypt_message())
