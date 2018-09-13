@@ -246,8 +246,9 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        # check every shiftsshift from 0 to 26
+        returnedValue = ()
         currMsgArr = re.findall(r"[\w']+|[.,!?;]", self.message_text)
+        matchedWordsPreviousTotal = 0;bestMatch = 0
         for i in list(range(26)):
             decryptedString = []
             currDict = self.build_shift_dict(i)
@@ -259,22 +260,39 @@ class CiphertextMessage(Message):
                     else:
                         possibleWord += letter
                 decryptedString.append(possibleWord)
-            wordCount = 0;punct = 0
+            matchedWordsTotal = 0;
             for eachWord in decryptedString:
-                if eachWord == "," or eachWord == "?" or eachWord == "!":
-                    punct += 1
                 if eachWord in self.valid_words:
-                    wordCount += 1
-                if wordCount + punct == len(currMsgArr):
-                    decryptedStringOutput = " ".join(decryptedString)
-                    return decryptedStringOutput
+                    matchedWordsTotal += 1
+                elif  eachWord == "," or eachWord == "?" or eachWord == "!":
+                    matchedWordsTotal += 1
+                if matchedWordsTotal > matchedWordsPreviousTotal:
+                    matchedWordsPreviousTotal = matchedWordsTotal
+                    bestMatch = i
+        decryptedStringOutput = self.apply_shift(bestMatch)
+        returnedValue += (bestMatch,decryptedStringOutput,)
+        return returnedValue
+
+def decrypt_story():
+    currStory = get_story_string()
+    ciphertext = CiphertextMessage(currStory)
+    return ciphertext.decrypt_message()
+
+####################################################################
+#tests
+####################################################################
 # {'a': 'd', 'A': 'D', 'b': 'e', 'B': 'E', 'c': 'f', 'C': 'F', 'd': 'g', 'D': 'G', 'e': 'h', 'E': 'H', 'f': 'i', 'F': 'I', 'g': 'j', 'G': 'J', 'h': 'k', 'H': 'K', 'i': 'l', 'I': 'L', 'j': 'm', 'J': 'M', 'k': 'n', 'K': 'N', 'l': 'o', 'L': 'O', 'm': 'p', 'M': 'P', 'n': 'q', 'N': 'Q', 'o': 'r', 'O': 'R', 'p': 's', 'P': 'S', 'q': 't', 'Q': 'T', 'r': 'u', 'R': 'U', 's': 'v', 'S': 'V', 't': 'w', 'T': 'W', 'u': 'x', 'U': 'X', 'v': 'y', 'V': 'Y', 'w': 'z', 'W': 'Z', 'x': 'a', 'X': 'A', 'y': 'b', 'Y': 'B', 'z': 'c', 'Z': 'C'}
 
-plaintext = PlaintextMessage('hello, mother sunshine', 2)
-print('Expected Output: jgnnq, oqvjgt uwpujkpg')
-print('Actual Output:', plaintext.get_message_text_encrypted())
-
-print('_______________________________________________________')
-ciphertext = CiphertextMessage('jgnnq, oqvjgt uwpujkpg')
-print('Expected Output:', (24, 'hello, mother sunshine'))
-print('Actual Output:', ciphertext.decrypt_message())
+# print('_______________________________________________________')
+# plaintext = PlaintextMessage('hello, mother sunshine', 2)
+# print('Expected Output: jgnnq, oqvjgt uwpujkpg')
+# print('Actual Output:', plaintext.get_message_text_encrypted())
+# print('_______________________________________________________')
+# ciphertext = CiphertextMessage('complain rule quick sample seat pride modesty time advance net account direction situation neighbor report')
+# print('Actual Output:', ciphertext.decrypt_message())
+# print('_______________________________________________________')
+# ciphertext = CiphertextMessage('bargain great tight nation overflow sea grease invent mere desire low possessor ruin grateful upper fan orange best continue remark many vessel tune satisfactory hold parent gain speed other wear truth people offend confidential wire')
+# print('Actual Output:', ciphertext.decrypt_message())
+# print('_______________________________________________________')
+# ciphertext = CiphertextMessage('bargain great tight nation overflow sea grease invent mere desire low possessor ruin grateful upper fan orange best continue remark many vessel tune satisfactory hold parent gain speed other wear truth people offend confidential wire')
+# print('Actual Output:', ciphertext.decrypt_message())
